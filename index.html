@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pronostics Chrono — Paris</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏁</text></svg>">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+</head>
+<body>
+<div class="app">
+  <header class="site-header">
+    <div class="brand-row">
+      <div class="brand-left">
+        <div class="brand-flag">🏁</div>
+        <div>
+          <div class="brand-name">Pronostics Chrono</div>
+          <div class="brand-sub">Triathlon entre collègues</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <a href="results.html" class="hbtn gold" title="Classement"><i class="ti ti-trophy"></i></a>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="jp">⏱ Juste Prix</button>
+      <button class="tab-btn" data-tab="spec">🏊 Spécialiste</button>
+      <button class="tab-btn" data-tab="trans">🔄 Transition</button>
+      <button class="tab-btn" data-tab="tierce">🏆 Tiercé</button>
+      <button class="tab-btn" data-tab="prem">🥇 1er / 1ère</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- JUSTE PRIX -->
+    <div id="sec-jp" class="section active">
+      <div class="name-bar">
+        <label>Parieur</label>
+        <input type="text" id="bettor" placeholder="Ton prénom…" autocomplete="off">
+      </div>
+      <div class="mkt-hd">Temps total estimé — HH : MM : SS</div>
+      <div id="jp-list"></div>
+      <button class="btn-primary" id="btn-jp">Valider mes estimations</button>
+    </div>
+
+    <!-- SPÉCIALISTE -->
+    <div id="sec-spec" class="section">
+      <div class="name-bar">
+        <label>Parieur</label>
+        <input type="text" id="bettor-spec" placeholder="Ton prénom…" autocomplete="off">
+      </div>
+      <div id="spec-list"></div>
+      <button class="btn-primary" id="btn-spec">Valider le spécialiste</button>
+    </div>
+
+    <!-- TRANSITION -->
+    <div id="sec-trans" class="section">
+      <div class="name-bar">
+        <label>Parieur</label>
+        <input type="text" id="bettor-trans" placeholder="Ton prénom…" autocomplete="off">
+      </div>
+      <div class="mkt-hd">⚡ Transition T1</div>
+      <div class="card card-body">
+        <label class="mkt-label">Qui sera le plus rapide en T1 ?</label>
+        <select id="tr-T1" class="mkt-select"></select>
+      </div>
+      <div class="mkt-hd">⚡ Transition T2</div>
+      <div class="card card-body">
+        <label class="mkt-label">Qui sera le plus rapide en T2 ?</label>
+        <select id="tr-T2" class="mkt-select"></select>
+      </div>
+      <button class="btn-primary" id="btn-trans">Valider les transitions</button>
+    </div>
+
+    <!-- TIERCÉ -->
+    <div id="sec-tierce" class="section">
+      <div class="name-bar">
+        <label>Parieur</label>
+        <input type="text" id="bettor-tierce" placeholder="Ton prénom…" autocomplete="off">
+      </div>
+      <div class="mkt-hd">🏆 Top 3 général</div>
+      <div class="card card-body">
+        <div class="tierce-note">Ordre exact = <span class="g">3 pts</span> &nbsp;·&nbsp; Bons noms désordre = <span class="o">1 pt</span></div>
+        <div class="tierce-rows">
+          <div class="tierce-item"><div class="pos-dot pos-1">1</div><select id="tc1" class="mkt-select"></select></div>
+          <div class="tierce-item"><div class="pos-dot pos-2">2</div><select id="tc2" class="mkt-select"></select></div>
+          <div class="tierce-item"><div class="pos-dot pos-3">3</div><select id="tc3" class="mkt-select"></select></div>
+        </div>
+      </div>
+      <button class="btn-primary" id="btn-tierce">Parier le tiercé</button>
+    </div>
+
+    <!-- PREMIER·E -->
+    <div id="sec-prem" class="section">
+      <div class="name-bar">
+        <label>Parieur</label>
+        <input type="text" id="bettor-prem" placeholder="Ton prénom…" autocomplete="off">
+      </div>
+      <div class="mkt-hd">👨 Premier homme</div>
+      <div class="card card-body">
+        <label class="mkt-label">Qui finira 1er chez les hommes ?</label>
+        <select id="ph" class="mkt-select"></select>
+      </div>
+      <div class="mkt-hd">👩 Première femme</div>
+      <div class="card card-body">
+        <label class="mkt-label">Qui finira 1ère chez les femmes ?</label>
+        <select id="pf" class="mkt-select"></select>
+      </div>
+      <button class="btn-primary" id="btn-prem">Valider mes paris</button>
+    </div>
+  </main>
+</div>
+
+<div id="toast"></div>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap');
+</style>
+
+<link rel="stylesheet" href="/src/style.css">
+<script type="module" src="/src/pages/bets.js"></script>
+</body>
+</html>

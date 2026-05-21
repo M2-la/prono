@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pronostics Chrono — Admin</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="/src/style.css">
+  <style>
+    .admin-warn {
+      background: #1c1600; border: 1px solid #3d2e00;
+      border-radius: var(--radius); padding: 10px 12px;
+      margin-bottom: 16px; font-size: 12px; color: var(--gold);
+      display: flex; gap: 8px; align-items: flex-start; line-height: 1.5;
+    }
+    .athlete-block { margin-bottom: 10px; }
+    .athlete-block-header {
+      background: var(--ink2); border: 1px solid var(--border);
+      border-radius: var(--radius) var(--radius) 0 0;
+      padding: 10px 13px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .athlete-block-header .ath-n {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800; font-size: 15px;
+    }
+    .athlete-block-header .ath-gender { font-size: 16px; }
+    .athlete-block-header .ath-cat-badge {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 10px; letter-spacing: .8px;
+      text-transform: uppercase; padding: 2px 7px; border-radius: 3px;
+      background: var(--ink4); color: var(--muted);
+    }
+    .time-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+      background: var(--ink3);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      padding: 10px;
+    }
+    .time-field { text-align: center; }
+    .time-field label {
+      font-size: 9px; font-weight: 700; letter-spacing: 1px;
+      color: #4b5563; text-transform: uppercase;
+      display: block; margin-bottom: 4px;
+    }
+    .time-field input {
+      width: 100%; padding: 7px 2px;
+      background: var(--ink); border: 1px solid var(--border2);
+      border-radius: 4px; color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 14px;
+      text-align: center; outline: none;
+      transition: border-color .15s;
+    }
+    .time-field input:focus { border-color: var(--lime); }
+    .time-field input.saved { border-color: #3dd68c; }
+
+    .status-bar {
+      background: var(--ink3); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 12px 14px;
+      margin-bottom: 14px; display: flex; align-items: center;
+      justify-content: space-between;
+    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .status-dot.ok { background: #3dd68c; }
+    .status-dot.warn { background: var(--gold); }
+    .status-dot.off { background: #374151; }
+    .status-text { font-size: 12px; color: var(--muted); flex: 1; margin-left: 8px; }
+    .status-count { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; color: var(--muted2); }
+
+    .total-preview {
+      background: var(--ink); border: 1px solid var(--border);
+      border-radius: 4px; padding: 4px 8px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; font-size: 13px;
+      color: var(--muted); margin-top: 6px;
+      text-align: center; letter-spacing: .5px;
+    }
+    .total-preview.has-value { color: var(--lime); }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="site-header">
+    <div class="brand-row" style="padding-bottom:14px">
+      <div class="brand-left">
+        <a href="index.html" class="hbtn" title="Retour aux paris"><i class="ti ti-arrow-left"></i></a>
+        <div class="brand-flag" style="margin-left:6px">⚙️</div>
+        <div>
+          <div class="brand-name">Admin — Chronos</div>
+          <div class="brand-sub">Saisie des temps réels</div>
+        </div>
+      </div>
+      <a href="results.html" class="hbtn gold" title="Voir résultats"><i class="ti ti-trophy"></i></a>
+    </div>
+  </header>
+
+  <main>
+    <div class="admin-warn">
+      <i class="ti ti-lock" style="font-size:16px;flex-shrink:0;margin-top:1px"></i>
+      <span>Page admin — entre les chronos définitifs de chaque participant puis clique "Sauvegarder". Les résultats se mettent à jour automatiquement.</span>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-dot" id="status-dot"></div>
+      <div class="status-text" id="status-text">Connexion…</div>
+      <div class="status-count" id="status-count"></div>
+    </div>
+
+    <div id="athletes-list"></div>
+
+    <button class="btn-gold" id="btn-save">
+      <i class="ti ti-device-floppy" style="font-size:15px;vertical-align:-2px;margin-right:6px"></i>
+      Sauvegarder tous les temps
+    </button>
+    <button class="btn-ghost" id="btn-recalc">
+      <i class="ti ti-refresh" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>
+      Recharger depuis la base
+    </button>
+  </main>
+</div>
+
+<div id="toast"></div>
+<script type="module" src="/src/pages/admin.js"></script>
+</body>
+</html>

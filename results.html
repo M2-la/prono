@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pronostics Chrono — Résultats</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏁</text></svg>">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="/src/style.css">
+  <style>
+    /* ── Podium ── */
+    .podium-stage { display: flex; align-items: flex-end; justify-content: center; gap: 6px; height: 180px; margin: 8px 0 20px; }
+    .pod-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .pod-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 15px;
+      cursor: pointer; transition: transform .15s;
+    }
+    .pod-avatar:hover { transform: scale(1.1); }
+    .pod-avatar.p1 { background: var(--gold); color: #1a0e00; }
+    .pod-avatar.p2 { background: var(--silver); color: #0d1117; }
+    .pod-avatar.p3 { background: var(--bronze); color: #fff; }
+    .pod-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 13px; text-align: center; max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pod-pts { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 12px; }
+    .pod-blk { width: 60px; border-radius: 4px 4px 0 0; display: flex; align-items: flex-start; justify-content: center; padding-top: 8px; font-size: 22px; }
+    .blk1 { background: var(--gold); height: 110px; }
+    .blk2 { background: var(--silver); height: 76px; }
+    .blk3 { background: var(--bronze); height: 56px; }
+
+    /* ── Leaderboard ── */
+    .lb-list { display: flex; flex-direction: column; gap: 6px; }
+    .lb-item {
+      background: var(--ink3); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 11px 13px;
+      display: flex; align-items: center; gap: 10px;
+      cursor: pointer; transition: border-color .15s;
+    }
+    .lb-item:hover { border-color: var(--lime); }
+    .lb-item.top1 { border-color: var(--gold); }
+    .lb-pos { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 13px; color: #4b5563; width: 20px; }
+    .lb-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--ink4); border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 12px;
+      color: var(--muted2); flex-shrink: 0;
+    }
+    .lb-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; flex: 1; }
+    .lb-track { width: 60px; height: 4px; background: var(--ink); border-radius: 2px; overflow: hidden; }
+    .lb-bar { height: 4px; border-radius: 2px; background: var(--lime); width: 0; }
+    .lb-pts { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 16px; color: var(--lime); min-width: 48px; text-align: right; }
+
+    /* ── Per-athlete chrono section ── */
+    .chrono-grid { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+    .chrono-row {
+      background: var(--ink3); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 10px 13px;
+      display: flex; align-items: center; gap: 10px;
+      cursor: pointer; transition: border-color .15s;
+    }
+    .chrono-row:hover { border-color: var(--muted); }
+    .chrono-pos { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 13px; color: #4b5563; width: 22px; flex-shrink: 0; }
+    .chrono-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px; flex: 1; }
+    .chrono-time { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; color: var(--muted); letter-spacing: .5px; }
+    .closest-badge {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 10px;
+      letter-spacing: .5px; padding: 2px 6px; border-radius: 3px;
+      background: #1a3322; color: #3dd68c; white-space: nowrap;
+    }
+
+    /* ── Drawer / Modal ── */
+    .drawer-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.7);
+      z-index: 300; display: flex; align-items: flex-end;
+      opacity: 0; pointer-events: none; transition: opacity .25s;
+    }
+    .drawer-overlay.open { opacity: 1; pointer-events: all; }
+    .drawer {
+      background: var(--ink2); border-radius: 14px 14px 0 0;
+      width: 100%; max-width: 430px; margin: 0 auto;
+      max-height: 85vh; overflow-y: auto;
+      transform: translateY(100%); transition: transform .3s cubic-bezier(.34,1.2,.64,1);
+      padding: 0 0 32px;
+    }
+    .drawer-overlay.open .drawer { transform: translateY(0); }
+    .drawer-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 14px; }
+    .drawer-header { padding: 0 16px 12px; border-bottom: 1px solid #1f2937; }
+    .drawer-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 20px; }
+    .drawer-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .drawer-body { padding: 14px 16px 0; }
+    .bet-item {
+      background: var(--ink3); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 10px 12px;
+      margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .bet-cat { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px; color: var(--muted); }
+    .bet-val { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px; }
+    .bet-pts { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 15px; margin-left: 10px; }
+    .bet-pts.win { color: var(--lime); }
+    .bet-pts.zero { color: #374151; }
+    .bet-right { display: flex; align-items: center; gap: 6px; }
+    .bet-diff { font-size: 11px; color: var(--muted); }
+
+    /* ── Athlete drawer ── */
+    .ath-drawer-row {
+      background: var(--ink3); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 10px 13px;
+      margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .ath-drawer-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px; color: var(--muted); }
+    .ath-drawer-time { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px; }
+    .ath-drawer-bets { margin-top: 14px; }
+    .ath-drawer-bet-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1f2937; }
+    .ath-drawer-bet-row:last-child { border-bottom: none; }
+    .adb-user { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px; }
+    .adb-prono { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; color: var(--muted); }
+    .adb-diff-good { font-size: 11px; color: #3dd68c; font-weight: 600; }
+    .adb-diff-ok { font-size: 11px; color: var(--gold); font-weight: 600; }
+    .adb-diff-far { font-size: 11px; color: #4b5563; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="site-header">
+    <div class="brand-row">
+      <div class="brand-left">
+        <a href="index.html" class="hbtn" title="Retour aux paris" style="margin-right:4px"><i class="ti ti-arrow-left"></i></a>
+        <div class="brand-flag">🏁</div>
+        <div>
+          <div class="brand-name">Pronostics Chrono</div>
+          <div class="brand-sub">Classement & Résultats</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button id="btn-refresh" class="hbtn" title="Actualiser"><i class="ti ti-refresh"></i></button>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="pronos">🏆 Pronos</button>
+      <button class="tab-btn" data-tab="course">⏱ Course</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- CLASSEMENT PRONOS -->
+    <div id="sec-pronos" class="section active">
+      <div id="pronos-content">
+        <div class="empty"><div class="e-big">00:00</div><p>Chargement…</p></div>
+      </div>
+    </div>
+
+    <!-- CLASSEMENT COURSE -->
+    <div id="sec-course" class="section">
+      <div id="course-content">
+        <div class="empty"><div class="e-big">--</div><p>Chargement…</p></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Drawer parieur -->
+<div class="drawer-overlay" id="bettor-drawer">
+  <div class="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-header">
+      <div class="drawer-title" id="drawer-title">Nom du parieur</div>
+      <div class="drawer-sub" id="drawer-sub">Total : 0 pts</div>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+  </div>
+</div>
+
+<!-- Drawer athlète -->
+<div class="drawer-overlay" id="athlete-drawer">
+  <div class="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-header">
+      <div class="drawer-title" id="ath-drawer-title">Athlète</div>
+      <div class="drawer-sub" id="ath-drawer-sub">Temps final</div>
+    </div>
+    <div class="drawer-body" id="ath-drawer-body"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script type="module" src="/src/pages/results.js"></script>
+</body>
+</html>
